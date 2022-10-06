@@ -42,7 +42,7 @@ public class Rope : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("현재 이 로프에는 주인이 없습니다");
+                Debug.LogWarning("Player object is null!!");
                 return false;
             }
         }
@@ -57,6 +57,7 @@ public class Rope : MonoBehaviour
         _mapLayer = 1 << LayerMask.NameToLayer("Map");
     }
 
+    #region Shoot And Cancel
     private void OnEnable()
     {
         _playerDistanceJoint.anchor = Vector2.zero;
@@ -86,6 +87,9 @@ public class Rope : MonoBehaviour
         _isHooked = false;
         _ropeLineRenderer.enabled = false;
     }
+    #endregion
+
+    #region Manage Rope
 
     private void Update()
     {
@@ -272,4 +276,5 @@ public class Rope : MonoBehaviour
         _ropeLineRenderer.SetPosition(_anchorsList.Count - 1, _anchorsList.Last());
         _ropeLineRenderer.SetPosition(_anchorsList.Count, _player.transform.position);
     }
+    #endregion
 }
