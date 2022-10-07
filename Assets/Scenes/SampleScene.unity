@@ -870,16 +870,13 @@ MonoBehaviour:
   _player: {fileID: 1237019586}
   _aimPoint: {fileID: 2124742350}
   _isHooked: 0
-  _maxOffset: 2
+  _material: {fileID: 2100000, guid: c06d6fb8e134ad44e804972937389362, type: 2}
   _stepOffset: 0.2
   _cancelVelocityDamp: 0.1
   _minLength: 3
-  _nowLength: 3
   _maxLength: 30
   _climbSpeed: 3
   _swingVelocity: 100
-  _defaultPower: 20
-  _material: {fileID: 2100000, guid: c06d6fb8e134ad44e804972937389362, type: 2}
 --- !u!50 &1369393570
 Rigidbody2D:
   serializedVersion: 4

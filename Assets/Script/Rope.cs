@@ -8,19 +8,18 @@ public class Rope : MonoBehaviour
 {
     public GameObject _player = null;
     public GameObject _aimPoint = null;
-    public  bool _isHooked = false;
+    public bool _isHooked = false;
+    [SerializeField] private Material _material;
 
-    [SerializeField] private float _maxOffset = 0f;
     [SerializeField] private float _stepOffset = 0f;
     [SerializeField] private float _cancelVelocityDamp = 0f;
     [SerializeField] private float _minLength = 0f;
-    [SerializeField] private float _nowLength = 0f;
     [SerializeField] private float _maxLength = 0f;
     [SerializeField] private float _climbSpeed = 0f;
     [SerializeField] private float _swingVelocity = 0f;
-    [SerializeField] private Material _material;
 
 
+    private float _nowLength = 0f;
     private Rigidbody2D _playerBody = null;
     private int _mapLayer = -1;
     private List<Vector2> _anchorsList = new List<Vector2>();
@@ -117,14 +116,7 @@ public class Rope : MonoBehaviour
 
     private Vector2 HookedPos()
     {
-        for (int i = 1; i < (int)(_maxOffset / _stepOffset) + 1; i++)
-        {
-            if (!Physics2D.Linecast(_player.transform.position, _firstHitRaycast2D.point + _stepOffset * i * _firstHitRaycast2D.normal.normalized, _mapLayer))
-            {
-                return _firstHitRaycast2D.point + (_firstHitRaycast2D.normal.normalized * _stepOffset * i);
-            }
-        }
-        return _firstHitRaycast2D.point + (_firstHitRaycast2D.normal.normalized * _maxOffset);
+        return _firstHitRaycast2D.point + (_firstHitRaycast2D.normal.normalized * _stepOffset);
     }
     private void CompleteHook(Vector2 firstHitPos)
     {
@@ -163,22 +155,19 @@ public class Rope : MonoBehaviour
             _ropeLineRenderer.SetPosition(_anchorsList.Count, _player.transform.position);
         }
     }
+
+    RaycastHit2D hit;
     private bool ShouldAddAnchor()
     {
-        RaycastHit2D hit;
         if (hit = Physics2D.Linecast(_player.transform.position, _anchorsList.Last(), _mapLayer))
         {
-            for (int i = 1; i < (int)(_maxOffset / _stepOffset) + 1; i++)
-            {
-                Vector2 nextPos = hit.point + _stepOffset * i * hit.normal.normalized;
-                if (!Physics2D.Linecast(_player.transform.position, nextPos, _mapLayer) && !Physics2D.Linecast(nextPos, _anchorsList.Last(), _mapLayer))
-                {
-                    _nextAnchorDir = hit.point + _stepOffset * i * hit.normal.normalized;
-                    return true;
-                }
-            }
+            _nextAnchorDir = hit.point + _stepOffset * hit.normal.normalized;
+            return true;
         }
-        return false;
+        else
+        {
+            return false;
+        }
     }
 
     private bool CanDeleteAnchor()
@@ -210,11 +199,11 @@ public class Rope : MonoBehaviour
     private void Climb()
     {
         _nowLength -= Input.GetAxisRaw("Vertical") * _climbSpeed * Time.deltaTime;
-        if(_nowLength >  _maxLength)
+        if (_nowLength > _maxLength)
         {
             _nowLength = _maxLength;
         }
-        else if(_nowLength < _minLength)
+        else if (_nowLength < _minLength)
         {
             _nowLength = _minLength;
         }
@@ -263,7 +252,7 @@ public class Rope : MonoBehaviour
 
     private void ForceCancel()
     {
-        if (Vector2.Distance(transform.position, _player.transform.position) + _combinedAnchorLen.Sum() > _maxLength)
+        if (Vector2.Distance(_player.transform.position, _anchorsList.Last()) + _combinedAnchorLen.Sum() > _maxLength)
         {
             Debug.Log("Force To Cancel Rope");
             _player.GetComponent<Player>().CancelRope();
